@@ -117,10 +117,10 @@ begin
         lapTFF       <= '0';     
       else
         if startStopRise = '1' then
-          startStopTFF <= '1';
+          startStopTFF <= not startStopTFF;
         end if;
         if lapRise = '1' then
-          lapTFF <= '1';
+          lapTFF <= not lapTFF;
         end if;
       end if;
     end if;
@@ -139,7 +139,7 @@ begin
     port map ( clk => clk, rst => clearSync, ce => decCntTC, tc => secLowCntTC, count => secLowCnt);
   
   secHighCounter : modCounter 
-    generic map ( MAXVAL => 6 )
+    generic map ( MAXVAL => 5 )
     port map ( clk => clk, rst => clearSync, ce => secLowCntTC, tc => open, count => secHighCnt);
 
   lapRegisters :
@@ -150,8 +150,8 @@ begin
         secLowReg  <= (others => '0');
         secHighReg <= (others => '0');       
       elsif lapRise = '1' then
-        secLowReg  <= secHighCnt;
-        secHighReg <= secLowCnt;        
+        secLowReg  <= secLowCnt;
+        secHighReg <= secHighCnt;        
       end if;
     end if;
   end process;
@@ -160,8 +160,8 @@ begin
     secHighMux <= '0' & secHighReg when lapTFF = '1' else '0' & secHighCnt;
   
   rigthMux :
-    secLowMux <= '0' & secLowReg when lapTFF = '1' else '0' & secLowCnt;
+    secLowMux <= secLowReg when lapTFF = '1' else secLowCnt;
   
-  leds <= secHighMux & secLowMux;
+  leds <= decCnt(3) & (6 downto 0 => '0') & secHighMux & secLowMux;
   
 end syn;

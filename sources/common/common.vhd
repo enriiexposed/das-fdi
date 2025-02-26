@@ -98,7 +98,62 @@ component edgeDetector is
         xRise : out std_logic    -- se activa durante 1 ciclo cada vez que detecta un flanco de bajada en x
       );
 end component;
+
+component freqSynthesizer is
+  generic (
+    FREQ_KHZ : natural;                 -- frecuencia del reloj de entrada en KHz
+    MULTIPLY : natural range 1 to 64;   -- factor por el que multiplicar la frecuencia de entrada 
+    DIVIDE   : natural range 1 to 128   -- divisor por el que dividir la frecuencia de entrada
+  );
+  port (
+    clkIn  : in  std_logic;   -- reloj de entrada
+    rdy    : out std_logic;   -- indica si el reloj de salida es válido
+    clkOut : out std_logic    -- reloj de salida
+  );
+end component;
+
+component asyncRstSynchronizer is
+  generic (
+    STAGES : natural;         -- número de biestables del sincronizador
+    XPOL   : std_logic        -- polaridad (en reposo) de la señal de reset
+  );
+  port (
+    clk    : in  std_logic;   -- reloj del sistema
+    rstIn  : in  std_logic;   -- rst de entrada
+    rstOut : out std_logic    -- rst de salida
+  );
+end component;
+
+component segsBankRefresher is
+  generic(
+    FREQ_KHZ : natural;   -- frecuencia de operacion en KHz
+    SIZE     : natural    -- número de displays a refrescar     
+  );
+  port (
+    -- host side
+    clk    : in std_logic;                              -- reloj del sistema
+    ens    : in std_logic_vector (SIZE-1 downto 0);     -- capacitaciones
+    bins   : in std_logic_vector (4*SIZE-1 downto 0);   -- códigos binarios a mostrar
+    dps    : in std_logic_vector (SIZE-1 downto 0);     -- puntos
+    -- 7 segs display side
+    an_n   : out std_logic_vector (SIZE-1 downto 0);    -- selector de display  
+    segs_n : out std_logic_vector (7 downto 0)          -- código 7 segmentos 
+  );
+end component;
  
+component ps2receiver is
+  port (
+    -- host side
+    clk        : in  std_logic;   -- reloj del sistema
+    rst        : in  std_logic;   -- reset síncrono del sistema      
+    dataRdy    : out std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo dato recibido
+    data       : out std_logic_vector (7 downto 0);  -- dato recibido
+    -- PS2 side
+    ps2Clk     : in  std_logic;   -- entrada de reloj del interfaz PS2
+    ps2Data    : in  std_logic    -- entrada de datos serie del interfaz PS2
+  );
+end component;
+
 end package common;
 
 -------------------------------------------------------------------

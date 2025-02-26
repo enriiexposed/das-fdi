@@ -35,10 +35,11 @@ end bin2segs;
 -------------------------------------------------------------------
 
 architecture syn of bin2segs is
+    -- señal interna negada
   signal segs : std_logic_vector(7 downto 0);
 begin 
 
-  segs(7) <= dp;
+  segs(7) <= not dp;
   with bin select
     segs(6 downto 0) <= 
         "0000001" when X"0",
