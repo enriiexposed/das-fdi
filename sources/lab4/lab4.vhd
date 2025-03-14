@@ -57,11 +57,11 @@ architecture syn of lab4 is
   signal codeAux     : std_logic_vector(15 downto 0);
 
   -- Descomentar para instrumentar el diseño
-  -- attribute mark_debug : string;
-  -- attribute mark_debug of ps2Clk  : signal is "true";
-  -- attribute mark_debug of ps2Data : signal is "true";
-  -- attribute mark_debug of dataRdy : signal is "true";
-  -- attribute mark_debug of data    : signal is "true";
+  attribute mark_debug : string;
+  attribute mark_debug of ps2Clk  : signal is "true";
+  attribute mark_debug of ps2Data : signal is "true";
+  attribute mark_debug of dataRdy : signal is "true";
+  attribute mark_debug of data    : signal is "true";
 
 begin
 
@@ -123,8 +123,49 @@ begin
     type states is (S0, S1, S2, S3); 
     variable state: states := S0;
   begin
-    if (rising_edge(clk)) then
+  -- Logica de salidas
+    case state is 
+        when S0 =>
+            if (dataRdy = '1' and data /= X"F0") then
+                ldCode <= '1';
+            end if;
+            soundEnable <= '0';    
+        when S1 =>
+            soundEnable <= '1';
+        when S2 =>
+            soundEnable <= '1';
+        when S3 =>
+            soundEnable <= '0';
+    end case;
     
+    -- Logica de cambio de estados
+    if (rstSync = '1') then
+        state := S0;
+    elsif (rising_edge(clk)) then
+       case state is
+           when S0 =>
+               if (dataRdy = '1') then
+                    if (data = X"F0") then
+                        state := S3; 
+                    else state := S1;
+                    end if;
+               end if;
+           when S1 =>
+               if (dataRdy = '1' and data = X"F0") then
+                   state := S2;
+               end if;
+           when S2 =>
+               if (dataRdy = '1') then
+                   if (data /= code) then
+                       state := S1; 
+                   else state := S0;
+                   end if;
+               end if;
+           when S3 => 
+               if (dataRdy = '1') then
+                   state := S0;
+               end if;
+        end case;         
     end if;
   end process;  
   

@@ -64,8 +64,8 @@ begin
     if rising_edge(clk) then
       if rst = '1' or lastBit = '1' then
         ps2DataShf <= (others => '1');
-      else
-        ps2DataShf <= '0' & ps2DataShf(ps2DataShf'left downto 1);
+      elsif ps2ClkFall = '1' then
+        ps2DataShf <= ps2Data & ps2DataShf(ps2DataShf'left downto 1);
       end if;
     end if;
   end process;
@@ -74,11 +74,9 @@ begin
   process(ps2DataShf)
     variable aux : std_logic;
   begin
-    aux := ps2DataShf(0);
-    for i in ps2DataShf'range loop
-      if ps2DataShf(i) = '1' then
-        aux := not aux;
-      end if;
+    aux := ps2DataShf(9);
+    for i in ps2DataShf(8 downto 1)'range loop
+      aux := aux xor ps2DataShf(i);
     end loop;
     parityOK <= aux;
   end process;
@@ -90,14 +88,15 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then 
-        if rst = '0' then
-          data <= (others => '0');
-          dataRdy <= '0';
+        if rst = '1' then
+            data <= (others => '0');
+            dataRdy <= '0';
         else
-          dataRdy <= parityOk and lastBit;
-          data <= ps2DataShf(8 downto 1);
+            dataRdy <= parityOk and lastBit;
+            if (parityOk = '1' and lastBit = '1') then
+                data <= ps2DataShf(8 downto 1);
+            end if;
         end if;
-    end if;
+    end if;  
   end process;
-    
-end syn;
+  end syn;

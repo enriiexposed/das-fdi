@@ -154,6 +154,76 @@ component ps2receiver is
   );
 end component;
 
+component rs232receiver is
+  generic (
+    FREQ_KHZ : natural;  -- frecuencia de operacion en KHz
+    BAUDRATE : natural   -- velocidad de comunicacion
+  );
+  port (
+    -- host side
+    clk     : in  std_logic;   -- reloj del sistema
+    rst     : in  std_logic;   -- reset síncrono del sistema
+    dataRdy : out std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo dato recibido
+    data    : out std_logic_vector (7 downto 0);   -- dato recibido
+    -- RS232 side
+    RxD     : in  std_logic    -- entrada de datos serie del interfaz RS-232
+  );
+end component;
+
+component rs232transmitter is
+  generic (
+    FREQ_KHZ : natural;  -- frecuencia de operacion en KHz
+    BAUDRATE : natural   -- velocidad de comunicacion
+  );
+  port (
+    -- host side
+    clk     : in  std_logic;   -- reloj del sistema
+    rst     : in  std_logic;   -- reset síncrono del sistema
+    dataRdy : in  std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo dato a transmitir
+    data    : in  std_logic_vector (7 downto 0);   -- dato a transmitir
+    busy    : out std_logic;   -- se activa mientras esta transmitiendo
+    -- RS232 side
+    TxD     : out std_logic    -- salida de datos serie del interfaz RS-232
+  );
+end component;
+
+component fifoQueue is
+  generic (
+    WL    : natural;   -- anchura de la palabra de fifo
+    DEPTH : natural    -- numero de palabras en fifo
+  );
+  port (
+    clk     : in  std_logic;   -- reloj del sistema
+    rst     : in  std_logic;   -- reset síncrono del sistema
+    wrE     : in  std_logic;   -- se activa durante 1 ciclo para escribir un dato en la fifo
+    dataIn  : in  std_logic_vector(WL-1 downto 0);   -- dato a escribir
+    rdE     : in  std_logic;   -- se activa durante 1 ciclo para leer un dato de la fifo
+    dataOut : out std_logic_vector(WL-1 downto 0);   -- dato a leer
+    numData : out std_logic_vector(log2(DEPTH)-1 downto 0);   -- numero de datos almacenados
+    full    : out std_logic;   -- indicador de fifo llena
+    empty   : out std_logic    -- indicador de fifo vacia
+  );
+end component;
+
+component vgaRefresher is
+  generic(
+    FREQ_DIV  : natural  -- razon entre la frecuencia de reloj del sistema y 25 MHz
+  );
+  port ( 
+    -- host side
+    clk   : in  std_logic;   -- reloj del sistema
+    line  : out std_logic_vector(9 downto 0);   -- numero de linea que se esta barriendo
+    pixel : out std_logic_vector(9 downto 0);   -- numero de pixel que se esta barriendo
+    R     : in  std_logic_vector(3 downto 0);   -- intensidad roja del pixel que se esta barriendo
+    G     : in  std_logic_vector(3 downto 0);   -- intensidad verde del pixel que se esta barriendo
+    B     : in  std_logic_vector(3 downto 0);   -- intensidad azul del pixel que se esta barriendo
+    -- VGA side
+    hSync : out std_logic := '0';   -- sincronizacion horizontal
+    vSync : out std_logic := '0';   -- sincronizacion vertical
+    RGB   : out std_logic_vector(11 downto 0) := (others => '0')   -- canales de color
+  );
+end component;
+
 end package common;
 
 -------------------------------------------------------------------
