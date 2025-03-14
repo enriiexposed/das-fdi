@@ -83,8 +83,8 @@ begin
   pixel <= std_logic_vector(pixelCnt);
   line  <= std_logic_vector(lineCnt);
   
-  hSyncInt <= '1' when pixelCnt >= 656 nand pixelCnt < 752 else '0';
-  vSyncInt <= '1' when lineCnt >= 490 nand lineCnt < 492 else '0';        
+  hSyncInt <= '1' when not(pixelCnt >= 656 and pixelCnt < 752) else '0';
+  vSyncInt <= '1' when not(lineCnt >= 490 and lineCnt < 492) else '0';        
 
   blanking <= (pixelCnt >= 640) or (lineCnt >= 480);
   
@@ -98,16 +98,19 @@ begin
           for i in 0 to 3 loop
             if not blanking then
               RGB(i + 8) <= R(i);
+            else RGB(i + 8) <= '0';
             end if;
           end loop;
           for i in 0 to 3 loop
             if not blanking then
               RGB(i + 4) <= G(i);
+            else RGB(i + 4) <= '0';
             end if;
           end loop;
           for i in 0 to 3 loop
             if not blanking then
               RGB(i) <= B(i);
+            else RGB(i) <= '0';
             end if;
           end loop;
       end if;

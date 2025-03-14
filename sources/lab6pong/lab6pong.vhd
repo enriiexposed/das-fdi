@@ -77,20 +77,31 @@ begin
   begin
     if rising_edge(clk) then
       if rstSync='1' then
-        ...
+        state := KeyON;
+        qP <= false;
+        aP <= false;
+        pP <= false;
+        lP <= false;
+        spcP <= false;
       elsif dataRdy='1' then
         case state is
           when keyON =>
             case data is
               when X"F0" => state := keyOFF;
               when X"15" => qP <= true;
-              ...
+              when X"1C" => aP <= true;
+              when X"4B" => lP <= true;
+              when X"4D" => pP <= true;
+              when X"29" => pP <= true;
             end case;
           when keyOFF =>
             state := keyON;
             case data is
-              when X"15" => qP <= false; 
-              ...
+              when X"15" => qP <= false;
+              when X"15" => aP <= false;
+              when X"4B" => lP <= false;
+              when X"4D" => pP <= false;
+              when X"29" => pP <= false;
             end case;
         end case;
       end if;
@@ -103,22 +114,22 @@ begin
     generic map ( FREQ_DIV => FREQ_DIV )
     port map ( clk => clk, line => lineAux, pixel => pixelAux, R => color, G => color, B => color, hSync => hSync, vSync => vSync, RGB => RGB );
 
-  pixel <= ...;
-  line  <= ...;
+  pixel <= unsigned(pixelAux(9 downto 2));
+  line  <= unsigned(lineAux(9 downto 2));
   
-  color <= ...;
+  color <= (others => '1');
 
  ------------------
   
-  campoJuego <= ...;
-  raquetaIzq <= ...;
-  raquetaDer <= ...;
-  pelota     <= ...;
+  campoJuego <= '1' when line = 8 and line = 111;
+  raquetaIzq <= '1' when pixel = 8 and line >= yLeft and line <= yLeft + 16;
+  raquetaDer <= '1' when pixel = 151 and line >= yRight and line <= yRight + 16;
+  pelota     <= '1' when pixel = xBall and line = yBall;
 
 ------------------
 
-  finPartida <= ...;
-  reiniciar  <= ...;   
+  finPartida <= xBall < 8 nand xBall > 151;
+  reiniciar  <= spcP;   
   
 ------------------
   
