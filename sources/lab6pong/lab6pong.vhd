@@ -128,7 +128,7 @@ begin
 
 ------------------
 
-  finPartida <= xBall < 8 nand xBall > 151;
+  finPartida <= (xBall <= 8) nand (xBall >= 151);
   reiniciar  <= spcP;   
   
 ------------------
@@ -138,7 +138,20 @@ begin
     constant CYCLES : natural := hz2cycles(FREQ_KHZ, 50);
     variable count  : natural range 0 to CYCLES-1 := 0;
   begin
-    ...
+    if rising_edge(clk) then
+        if rstSync = '1' then
+            count := 0;
+            mover <= false;
+        else
+          if count = CYCLES - 1 then
+            mover <= true;
+            count := 0;
+          else 
+            count := count + 1;
+            mover <= false;
+          end if;
+        end if;
+    end if;
   end process;    
         
 ------------------
@@ -146,13 +159,33 @@ begin
   yRightRegister:
   process (clk)
   begin
-    ...
+    if rising_edge(clk) then
+      if rstSync = '1' then
+        yRight <= to_unsigned( 8, 8 );
+      else 
+        if (pP and yRight > 9) then
+          yRight <= yRight - 1;
+        elsif (lP and yRight + 16 < 110) then
+          yRight <= yRight + 1; 
+        end if;
+      end if;
+    end if;
   end process;
   
   yLeftRegister:
   process (clk)
   begin
-    ...
+    if rising_edge(clk) then
+      if rstSync = '1' then
+        yLeft <= to_unsigned( 8, 8 );
+      else 
+        if (qP and yRight > 9) then
+          yLeft <= yLeft - 1;
+        elsif (aP and yRight + 16 < 110) then
+          yLeft <= yLeft + 1; 
+        end if;
+      end if;
+    end if;
   end process;
   
 ------------------
@@ -162,7 +195,29 @@ begin
     type sense is (left, right);
     variable dir: sense := left;
   begin
-    ...     
+    if rising_edge(clk) then
+      if rstSync = '1' then
+        xBall <= to_unsigned( 79, 8 );
+      else
+        if mover then
+          -- En caso de que haya que cambiar la direccion, la cambio
+          if (xBall = 9 and yBall >= yLeft and yBall <= yLeft + 16) then
+            dir := right;
+          elsif (xBall = 150 and yBall >= yRight and yBall <= yRight + 16) then
+            dir := left;
+          end if;
+          
+          -- En cualquier caso, actualizo el movimiento de la pelota si mover = true
+          if dir = left then
+            xBall <= xBall - 1;
+          elsif dir = right then
+            xBall <= xBall + 1;
+          end if;
+        end if;
+      end if;
+    end if;
+
+         
   end process;
 
   yBallRegister:
@@ -170,7 +225,27 @@ begin
     type sense is (up, down);
     variable dir: sense := up;
   begin
-    ...      
+    if rising_edge(clk) then
+      if rstSync = '1' then
+        yBall <= to_unsigned( 60, 8 );
+      else 
+        if (mover) then
+          -- Cambio la dir de la pelota en el eje y
+          if yBall = 9 then
+            dir := down;
+          elsif yBall = 110 then
+            dir := up;
+          end if;
+          
+          -- En cualquier caso, tengo que cambiar el valor de la componente
+          if dir = up then
+            yBall <= yBall - 1;
+          elsif dir = down then
+            yBall <= yBall + 1;
+          end if;
+        end if;
+      end if;
+    end if;
   end process;
 
 end syn;
