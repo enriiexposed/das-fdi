@@ -86,6 +86,7 @@ begin
       elsif dataRdy='1' then
         case state is
           when keyON =>
+            state := keyON;
             case data is
               when X"F0" => state := keyOFF;
               when X"15" => qP <= true;
@@ -93,15 +94,17 @@ begin
               when X"4B" => lP <= true;
               when X"4D" => pP <= true;
               when X"29" => pP <= true;
+              when others => null;
             end case;
           when keyOFF =>
             state := keyON;
             case data is
               when X"15" => qP <= false;
-              when X"15" => aP <= false;
+              when X"1C" => aP <= false;
               when X"4B" => lP <= false;
               when X"4D" => pP <= false;
               when X"29" => pP <= false;
+              when others => null;
             end case;
         end case;
       end if;
@@ -117,18 +120,18 @@ begin
   pixel <= unsigned(pixelAux(9 downto 2));
   line  <= unsigned(lineAux(9 downto 2));
   
-  color <= (others => '1');
+  color <= (others => campoJuego or raquetaIzq or raquetaDer or Pelota);
 
  ------------------
   
-  campoJuego <= '1' when line = 8 and line = 111;
-  raquetaIzq <= '1' when pixel = 8 and line >= yLeft and line <= yLeft + 16;
-  raquetaDer <= '1' when pixel = 151 and line >= yRight and line <= yRight + 16;
-  pelota     <= '1' when pixel = xBall and line = yBall;
+  campoJuego <= '1' when line = 8 and line = 111 else '0';
+  raquetaIzq <= '1' when pixel = 8 and line >= yLeft and line <= yLeft + 16 else '0';
+  raquetaDer <= '1' when pixel = 151 and line >= yRight and line <= yRight + 16 else '0';
+  pelota     <= '1' when pixel = xBall and line = yBall and not finPartida else '0';
 
 ------------------
 
-  finPartida <= (xBall <= 8) nand (xBall >= 151);
+  finPartida <= (xBall <= 6) or (xBall >= 153) or reiniciar;
   reiniciar  <= spcP;   
   
 ------------------
@@ -143,12 +146,17 @@ begin
             count := 0;
             mover <= false;
         else
-          if count = CYCLES - 1 then
-            mover <= true;
+          if finPartida then
             count := 0;
-          else 
-            count := count + 1;
             mover <= false;
+          else
+            if count = CYCLES - 1 then
+                mover <= true;
+                count := 0;
+            else 
+                count := count + 1;
+                mover <= false;
+            end if;
           end if;
         end if;
     end if;
@@ -162,10 +170,13 @@ begin
     if rising_edge(clk) then
       if rstSync = '1' then
         yRight <= to_unsigned( 8, 8 );
-      else 
+      else
+      
+        -- mover arriba
         if (pP and yRight > 9) then
           yRight <= yRight - 1;
-        elsif (lP and yRight + 16 < 110) then
+        -- mover abajo 
+        elsif (lP and yRight + 16 < 112) then
           yRight <= yRight + 1; 
         end if;
       end if;
@@ -179,10 +190,12 @@ begin
       if rstSync = '1' then
         yLeft <= to_unsigned( 8, 8 );
       else 
-        if (qP and yRight > 9) then
+        -- mover arriba
+        if (qP and yLeft > 0) then
           yLeft <= yLeft - 1;
-        elsif (aP and yRight + 16 < 110) then
-          yLeft <= yLeft + 1; 
+        -- mover abajo
+        elsif (aP and yLeft + 16 < 112) then
+          yLeft <= yLeft + 1;
         end if;
       end if;
     end if;
@@ -199,11 +212,13 @@ begin
       if rstSync = '1' then
         xBall <= to_unsigned( 79, 8 );
       else
-        if mover then
-          -- En caso de que haya que cambiar la direccion, la cambio
-          if (xBall = 9 and yBall >= yLeft and yBall <= yLeft + 16) then
+        if reiniciar then
+          xBall <= to_unsigned( 79, 8 );
+        elsif mover then
+           -- En caso de que haya que cambiar la direccion, la cambio
+          if (xBall = 10 and yBall >= yLeft and yBall <= yLeft + 16) then
             dir := right;
-          elsif (xBall = 150 and yBall >= yRight and yBall <= yRight + 16) then
+          elsif (xBall = 151 and yBall >= yRight and yBall <= yRight + 16) then
             dir := left;
           end if;
           
@@ -216,8 +231,6 @@ begin
         end if;
       end if;
     end if;
-
-         
   end process;
 
   yBallRegister:
@@ -228,10 +241,12 @@ begin
     if rising_edge(clk) then
       if rstSync = '1' then
         yBall <= to_unsigned( 60, 8 );
-      else 
-        if (mover) then
+      else
+        if reiniciar then
+          yBall <= to_unsigned( 60, 8 );
+        elsif (mover) then
           -- Cambio la dir de la pelota en el eje y
-          if yBall = 9 then
+          if yBall = 10 then
             dir := down;
           elsif yBall = 110 then
             dir := up;
@@ -240,7 +255,7 @@ begin
           -- En cualquier caso, tengo que cambiar el valor de la componente
           if dir = up then
             yBall <= yBall - 1;
-          elsif dir = down then
+          else
             yBall <= yBall + 1;
           end if;
         end if;
