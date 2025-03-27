@@ -93,7 +93,7 @@ begin
               when X"1C" => aP <= true;
               when X"4B" => lP <= true;
               when X"4D" => pP <= true;
-              when X"29" => pP <= true;
+              when X"29" => spcP <= true;
               when others => null;
             end case;
           when keyOFF =>
@@ -103,7 +103,7 @@ begin
               when X"1C" => aP <= false;
               when X"4B" => lP <= false;
               when X"4D" => pP <= false;
-              when X"29" => pP <= false;
+              when X"29" => spcP <= false;
               when others => null;
             end case;
         end case;
@@ -124,7 +124,7 @@ begin
 
  ------------------
   
-  campoJuego <= '1' when line = 8 and line = 111 else '0';
+  campoJuego <= '1' when line = 8 or line = 111 or (pixel = 79 and ((line - 8) mod 16 < 8)) else '0';
   raquetaIzq <= '1' when pixel = 8 and line >= yLeft and line <= yLeft + 16 else '0';
   raquetaDer <= '1' when pixel = 151 and line >= yRight and line <= yRight + 16 else '0';
   pelota     <= '1' when pixel = xBall and line = yBall and not reiniciar else '0';
@@ -147,7 +147,7 @@ begin
             mover <= false;
         else
           mover <= false;  
-          if reiniciar then
+          if finPartida then
             count := 0;
           else
             if count = CYCLES - 1 then
@@ -172,10 +172,10 @@ begin
       else
         if mover then
             -- mover arriba
-            if (pP and yRight > 0) then
+            if (pP and yRight > 9) then
               yRight <= yRight - 1;
             -- mover abajo 
-            elsif (lP and yRight + 16 < 112) then
+            elsif (lP and yRight + 16 < 110) then
               yRight <= yRight + 1; 
             end if;
         end if;
@@ -192,10 +192,10 @@ begin
       else
         if mover then
             -- mover arriba
-            if (qP and yLeft > 0) then
+            if (qP and yLeft > 9) then
               yLeft <= yLeft - 1;
             -- mover abajo
-            elsif (aP and yLeft + 16 < 112) then
+            elsif (aP and yLeft + 16 < 110) then
               yLeft <= yLeft + 1;
             end if;
         end if;
