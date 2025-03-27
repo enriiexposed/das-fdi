@@ -127,12 +127,12 @@ begin
   campoJuego <= '1' when line = 8 and line = 111 else '0';
   raquetaIzq <= '1' when pixel = 8 and line >= yLeft and line <= yLeft + 16 else '0';
   raquetaDer <= '1' when pixel = 151 and line >= yRight and line <= yRight + 16 else '0';
-  pelota     <= '1' when pixel = xBall and line = yBall and not finPartida else '0';
+  pelota     <= '1' when pixel = xBall and line = yBall and not reiniciar else '0';
 
 ------------------
 
-  finPartida <= (xBall <= 6) or (xBall >= 153) or reiniciar;
-  reiniciar  <= spcP;   
+  finPartida <= (xBall <= 6) or (xBall >= 153);
+  reiniciar  <= finPartida and spcP;   
   
 ------------------
   
@@ -146,16 +146,15 @@ begin
             count := 0;
             mover <= false;
         else
-          if finPartida then
+          mover <= false;  
+          if reiniciar then
             count := 0;
-            mover <= false;
           else
             if count = CYCLES - 1 then
                 mover <= true;
                 count := 0;
             else 
                 count := count + 1;
-                mover <= false;
             end if;
           end if;
         end if;
@@ -171,13 +170,14 @@ begin
       if rstSync = '1' then
         yRight <= to_unsigned( 8, 8 );
       else
-      
-        -- mover arriba
-        if (pP and yRight > 9) then
-          yRight <= yRight - 1;
-        -- mover abajo 
-        elsif (lP and yRight + 16 < 112) then
-          yRight <= yRight + 1; 
+        if mover then
+            -- mover arriba
+            if (pP and yRight > 0) then
+              yRight <= yRight - 1;
+            -- mover abajo 
+            elsif (lP and yRight + 16 < 112) then
+              yRight <= yRight + 1; 
+            end if;
         end if;
       end if;
     end if;
@@ -189,13 +189,15 @@ begin
     if rising_edge(clk) then
       if rstSync = '1' then
         yLeft <= to_unsigned( 8, 8 );
-      else 
-        -- mover arriba
-        if (qP and yLeft > 0) then
-          yLeft <= yLeft - 1;
-        -- mover abajo
-        elsif (aP and yLeft + 16 < 112) then
-          yLeft <= yLeft + 1;
+      else
+        if mover then
+            -- mover arriba
+            if (qP and yLeft > 0) then
+              yLeft <= yLeft - 1;
+            -- mover abajo
+            elsif (aP and yLeft + 16 < 112) then
+              yLeft <= yLeft + 1;
+            end if;
         end if;
       end if;
     end if;
@@ -214,7 +216,9 @@ begin
       else
         if reiniciar then
           xBall <= to_unsigned( 79, 8 );
-        elsif mover then
+        end if;
+        
+        if mover then
            -- En caso de que haya que cambiar la direccion, la cambio
           if (xBall = 10 and yBall >= yLeft and yBall <= yLeft + 16) then
             dir := right;
@@ -244,7 +248,9 @@ begin
       else
         if reiniciar then
           yBall <= to_unsigned( 60, 8 );
-        elsif (mover) then
+        end if;
+        
+        if mover then
           -- Cambio la dir de la pelota en el eje y
           if yBall = 10 then
             dir := down;
@@ -262,6 +268,5 @@ begin
       end if;
     end if;
   end process;
-
 end syn;
 
