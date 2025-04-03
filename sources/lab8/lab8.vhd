@@ -35,6 +35,7 @@ library ieee;
 use ieee.numeric_std.all;
 use work.common.all;
 
+
   architecture syn of lab8 is
 
   constant FREQ_KHZ : natural := 100_000;  -- frecuencia de operacion en KHz
@@ -173,7 +174,7 @@ begin
                 case key is 
                     when X"F0" => state := keyOff;
                     when X"12" => shiftP <= true;
-                    when X"58" => capsOn <= false;
+                    when X"58" => capsOn <= true;
                     when X"5A" => newLine <= '1';
                     when X"76" => clear <= '1';
                     when others => charRdy <= '1';
@@ -181,11 +182,11 @@ begin
             when KeyOFF => 
             state := KeyOn;
                 case key is 
-                    when X"12" => shiftP <= true;
+                    when X"12" => shiftP <= false;
                     when X"58" => capsOn <= false;
-                    when X"5A" => newLine <= '1';
-                    when X"76" => clear <= '1';
-                    when others => charRdy <= '1';
+                    when X"5A" => newLine <= '0';
+                    when X"76" => clear <= '0';
+                    when others => charRdy <= '0';
                 end case;
           end case;
         end if;
@@ -207,8 +208,11 @@ begin
     if rising_edge(clk) then
         if (clear = '1') then
           x <= (others => '0');
+        elsif (newline = '1') then
+          x <= (others => '0');
         elsif(charRdy = '1') then
-            if (x = COLSxLINE) then x <= (others => '0');
+            if (x = COLSxLINE) then 
+                x <= (others => '0');
             else x <= x + 1;
             end if;
         end if;
@@ -226,7 +230,6 @@ begin
                y <= (others => '0');
            else
                y <= y + 1;
-               x <= (others => '0');
            end if;
         elsif(charRdy = '1') then
             if (x = COLSxLINE) then
@@ -252,7 +255,7 @@ begin
   process (row, col, uRow, x, y)
   begin
     RGB <= RGBinterface;
-    if row = y and col = x then
+    if row = std_logic_vector(y) and col = std_logic_vector(x) then
       RGB <= (others => '1');
     end if;
   end process;

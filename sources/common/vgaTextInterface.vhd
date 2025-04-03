@@ -411,7 +411,7 @@ begin
   clearCounters:
   process (clk, clearX, clearY, clear)
   begin
-    if clear = '1' or (clearX /= (others => '0') and clearY /= (others => '0'   )) then
+    if clear = '1' or (clearX > "0000000" or clearY > "00000") then
       clearing <= '1';
     else
       clearing <= '0';
@@ -430,7 +430,6 @@ begin
         end if;
       end if;
     end if;
-  end process; 
-
+  end process;
 end syn;
 
