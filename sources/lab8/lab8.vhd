@@ -4,13 +4,13 @@
 --    lab8.vhd  12/09/2023
 --
 --    (c) J.M. Mendias
---    Diseño Automático de Sistemas
---    Facultad de Informática. Universidad Complutense de Madrid
+--    Diseï¿½o Automï¿½tico de Sistemas
+--    Facultad de Informï¿½tica. Universidad Complutense de Madrid
 --
---  Propósito:
+--  Propï¿½sito:
 --    Laboratorio 8
 --
---  Notas de diseño:
+--  Notas de diseï¿½o:
 --
 ---------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ library ieee;
 use ieee.numeric_std.all;
 use work.common.all;
 
-architecture syn of lab8 is
+  architecture syn of lab8 is
 
   constant FREQ_KHZ : natural := 100_000;  -- frecuencia de operacion en KHz
   constant VGA_KHZ  : natural := 25_000;   -- frecuencia de envio de pixeles a la VGA en KHz
@@ -83,8 +83,8 @@ architecture syn of lab8 is
     X"7f", X"6e", X"62", X"68", X"67", X"79", X"36", X"7f",    -- 0x30 ... 0x37: _ n b h g y 6 _
     X"7f", X"7f", X"6d", X"6a", X"75", X"37", X"38", X"7f",    -- 0x38 ... 0x3F: _ _ m j u 7 8 _    
     X"7f", X"2c", X"6b", X"69", X"6f", X"30", X"39", X"7f",    -- 0x40 ... 0x47: _ , k i o 0 9 _
-    X"7f", X"2e", X"2d", X"6c", X"a4", X"70", X"27", X"7f",    -- 0x48 ... 0x4F: _ . - l ñ p ' _    
-    X"7f", X"7f", X"b4", X"7f", X"60", X"a1", X"7f", X"7f",    -- 0x50 ... 0x57: _ _ ´ _ ` ¡ _ _
+    X"7f", X"2e", X"2d", X"6c", X"a4", X"70", X"27", X"7f",    -- 0x48 ... 0x4F: _ . - l ï¿½ p ' _    
+    X"7f", X"7f", X"b4", X"7f", X"60", X"a1", X"7f", X"7f",    -- 0x50 ... 0x57: _ _ ï¿½ _ ` ï¿½ _ _
     X"7f", X"7f", X"7f", X"2b", X"7f", X"7f", X"7f", X"7f",    -- 0x58 ... 0x5F: _ _ _ + _ _ _ _    
     X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f",    -- 0x60 ... 0x67: _ _ _ _ _ _ _ _
     X"7f", X"31", X"7f", X"34", X"37", X"7f", X"7f", X"7f",    -- 0x68 ... 0x6F: _ 1 _ 4 7 _ _ _
@@ -111,13 +111,13 @@ architecture syn of lab8 is
     X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f",    -- 0x08 ... 0x0F: _ _ _ _ _ _ _ _
     X"7f", X"7f", X"7f", X"7f", X"7f", X"51", X"21", X"7f",    -- 0x10 ... 0x17: _ _ _ _ _ Q ! _
     X"7f", X"7f", X"5a", X"53", X"41", X"57", X"22", X"7f",    -- 0x18 ... 0x1F: _ _ Z S A W " _
-    X"7f", X"43", X"58", X"44", X"45", X"24", X"b7", X"7f",    -- 0x20 ... 0x27: _ C X D E $ · _
+    X"7f", X"43", X"58", X"44", X"45", X"24", X"b7", X"7f",    -- 0x20 ... 0x27: _ C X D E $ ï¿½ _
     X"7f", X"20", X"56", X"46", X"54", X"52", X"25", X"7f",    -- 0x28 ... 0x2F: _   V F T R % _
     X"7f", X"4e", X"42", X"48", X"47", X"59", X"26", X"7f",    -- 0x30 ... 0x37: _ N B H G Y & _
     X"7f", X"7f", X"4d", X"4a", X"55", X"2f", X"28", X"7f",    -- 0x38 ... 0x3F: _ _ M J U / ( _    
     X"7f", X"3b", X"4b", X"49", X"4f", X"3d", X"29", X"7f",    -- 0x40 ... 0x47: _ ; K I O = ) _
-    X"7f", X"3a", X"5f", X"4c", X"a5", X"50", X"3f", X"7f",    -- 0x48 ... 0x4F: _ : _ L Ñ P ? _    
-    X"7f", X"7f", X"a8", X"7f", X"5e", X"bf", X"7f", X"7f",    -- 0x50 ... 0x57: _ _ ¨ _ ^ ¿ _ _
+    X"7f", X"3a", X"5f", X"4c", X"a5", X"50", X"3f", X"7f",    -- 0x48 ... 0x4F: _ : _ L ï¿½ P ? _    
+    X"7f", X"7f", X"a8", X"7f", X"5e", X"bf", X"7f", X"7f",    -- 0x50 ... 0x57: _ _ ï¿½ _ ^ ï¿½ _ _
     X"7f", X"7f", X"7f", X"2a", X"7f", X"7f", X"7f", X"7f",    -- 0x58 ... 0x5F: _ _ _ * _ _ _ _    
     X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f", X"7f",    -- 0x60 ... 0x67: _ _ _ _ _ _ _ _
     X"7f", X"31", X"7f", X"34", X"37", X"7f", X"7f", X"7f",    -- 0x68 ... 0x6F: _ 1 _ 4 7 _ _ _
@@ -166,10 +166,27 @@ begin
         newLine <= '0';
         clear   <= '0';
       else
-        ...
         if keyRdy='1' then
           case state is
-            ...
+            when KeyOn =>
+            state := KeyOn;
+                case key is 
+                    when X"F0" => state := keyOff;
+                    when X"12" => shiftP <= true;
+                    when X"58" => capsOn <= false;
+                    when X"5A" => newLine <= '1';
+                    when X"76" => clear <= '1';
+                    when others => charRdy <= '1';
+                end case;
+            when KeyOFF => 
+            state := KeyOn;
+                case key is 
+                    when X"12" => shiftP <= true;
+                    when X"58" => capsOn <= false;
+                    when X"5A" => newLine <= '1';
+                    when X"76" => clear <= '1';
+                    when others => charRdy <= '1';
+                end case;
           end case;
         end if;
       end if;
@@ -178,29 +195,56 @@ begin
 
   ------------------  
 
-  romAddr <= ...;
+  romAddr <= '1' & key when capsOn or shiftP else '0' & key;
 
-  asciiCode <= rom( ... );  
+  asciiCode <= rom( to_integer(unsigned(romAddr)) );  
     
   ------------------     
   
   xCounter:
   process (clk)
   begin
-    ...
+    if rising_edge(clk) then
+        if (clear = '1') then
+          x <= (others => '0');
+        elsif(charRdy = '1') then
+            if (x = COLSxLINE) then x <= (others => '0');
+            else x <= x + 1;
+            end if;
+        end if;
+    end if;
   end process;
   
   yCounter:
   process (clk)
   begin
-    ...
+    if rising_edge(clk) then
+        if (clear = '1') then
+          y <= (others => '0');
+        elsif (newLine = '1') then
+           if (y = ROWSxFRAME) then
+               y <= (others => '0');
+           else
+               y <= y + 1;
+               x <= (others => '0');
+           end if;
+        elsif(charRdy = '1') then
+            if (x = COLSxLINE) then
+                if (y = ROWSxFRAME) then 
+                    y <= (others => '0');
+                else 
+                    y <= y + 1;
+                end if;
+            end if;
+        end if;
+    end if;
   end process;
   
   ------------------     
 
   screenInterface: vgaTextInterface 
     generic map ( FREQ_DIV => FREQ_DIV, BGCOLOR => BGCOLOR, FGCOLOR => FGCOLOR )
-    port map ( clk => clk, clear => clear, x => std_logic_vector(x), y => std_logic_vector(y), char => char, charRdy => charRdy, col => col, uCol => open, row => row, uRow => uRow, hSync => hSync, vSync => vSync, RGB => RGBinterface );
+    port map ( clk => clk, clear => clear, x => std_logic_vector(x), y => std_logic_vector(y), char => char, dataRdy => charRdy, col => col, uCol => open, row => row, uRow => uRow, hSync => hSync, vSync => vSync, RGB => RGBinterface );
       
  ------------------     
 
@@ -208,8 +252,8 @@ begin
   process (row, col, uRow, x, y)
   begin
     RGB <= RGBinterface;
-    if ... then
-      ...
+    if row = y and col = x then
+      RGB <= (others => '1');
     end if;
   end process;
   

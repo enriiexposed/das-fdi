@@ -349,11 +349,13 @@ begin
     generic map ( FREQ_DIV => FREQ_DIV )
     port map ( clk => clk, line => line, pixel => pixel, R => color(11 downto 8), G => color(7 downto 4), B => color(3 downto 0), hSync => hSync, vSync => vSync, RGB => RGB );
   
-  colInt  <= ...;
-  uColInt <= ...;
+  -- contador modulo la resolucion de cada tecla
   
-  rowInt  <= ...;
-  uRowInt <= ...;
+  colInt  <= pixel(9 downto 3);
+  uColInt <= pixel(2 downto 0);
+  
+  rowInt  <= line(8 downto 4);
+  uRowInt <= line(3 downto 0);
   
   col  <= colInt;
   uCol <= uColInt;
@@ -363,53 +365,69 @@ begin
   
 ------------------  
 
-  we        <= ...;
-  ramWrData <= ... when clearing='0' else ...;      
-  ramWrAddr <= ... when clearing='0' else ...; 
-  ramRdAddr <= ...;
+  we        <= clearing or dataRdy;
+  ramWrData <= char when clearing='0' else (others => '0');      
+  ramWrAddr <= X & Y when clearing='0' else std_logic_vector(clearX) & std_logic_vector(clearY); 
+  ramRdAddr <= colInt & rowInt;
   
   process (clk)
   begin
     if rising_edge(clk) then
       if we='1' then
-        ram( ... ) <= ...;
+        ram( to_integer(unsigned(ramWrAddr)) ) <= ramWrData;
       end if; 
-      asciiCode <= ram( ... );
+      asciiCode <= ram( to_integer(unsigned(ramRdAddr)) );
     end if;
   end process;
   
 ------------------  
   
-  romAddr <= ...;
+  romAddr <= asciiCode & uRowInt;
  
   process (clk)
   begin
     if rising_edge(clk) then
-      bitMapLine <= rom( ... ) ;
+      bitMapLine <= rom( to_integer(unsigned(romAddr)) ) ;
     end if;
   end process;
 
 ------------------  
 
   with uColInt select
-    bitMapPixel <= 
-      ...
+    bitMapPixel <= bitMapLine(0) when "000",
+                   bitMapLine(1) when "001",
+                   bitMapLine(2) when "010",
+                   bitMapLine(3) when "011",
+                   bitMapLine(4) when "100",
+                   bitMapLine(5) when "101",
+                   bitMapLine(6) when "110",
+                   bitMapLine(7) when others;
+      
 
-  color <= ... when bitMapPixel='1' else ...;  
+  color <= FGCOLOR when bitMapPixel='1' else BGCOLOR;  
   
 ------------------  
 
   clearCounters:
   process (clk, clearX, clearY, clear)
   begin
-    if ... then
+    if clear = '1' or (clearX /= (others => '0') and clearY /= (others => '0'   )) then
       clearing <= '1';
     else
       clearing <= '0';
     end if;
+    
     if rising_edge(clk) then
       if clear='1' or clearing='1' then
-        ...
+        if (clearX = COLSxLINE) then
+            if (clearY = ROWSxFRAME) then
+                clearX <= (others => '0');
+                clearY <= (others => '0');
+            else
+                clearY <= clearY + 1;
+            end if;
+        else clearX <= clearX + 1;
+        end if;
       end if;
     end if;
   end process; 
