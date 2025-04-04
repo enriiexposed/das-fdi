@@ -394,14 +394,14 @@ begin
 ------------------  
 
   with uColInt select
-    bitMapPixel <= bitMapLine(0) when "000",
-                   bitMapLine(1) when "001",
-                   bitMapLine(2) when "010",
-                   bitMapLine(3) when "011",
-                   bitMapLine(4) when "100",
-                   bitMapLine(5) when "101",
-                   bitMapLine(6) when "110",
-                   bitMapLine(7) when others;
+    bitMapPixel <= bitMapLine(7) when "000",
+                   bitMapLine(6) when "001",
+                   bitMapLine(5) when "010",
+                   bitMapLine(4) when "011",
+                   bitMapLine(3) when "100",
+                   bitMapLine(2) when "101",
+                   bitMapLine(1) when "110",
+                   bitMapLine(0) when others;
       
 
   color <= FGCOLOR when bitMapPixel='1' else BGCOLOR;  

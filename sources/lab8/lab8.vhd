@@ -167,6 +167,9 @@ begin
         newLine <= '0';
         clear   <= '0';
       else
+        charRdy <= '0';
+        newLine <= '0';
+        clear <= '0';
         if keyRdy='1' then
           case state is
             when KeyOn =>
@@ -174,19 +177,18 @@ begin
                 case key is 
                     when X"F0" => state := keyOff;
                     when X"12" => shiftP <= true;
-                    when X"58" => capsOn <= true;
+                    when X"58" => capsOn <= not capsOn;
                     when X"5A" => newLine <= '1';
                     when X"76" => clear <= '1';
-                    when others => charRdy <= '1';
+                    when others => 
+                        charRdy <= '1';
+                        char <= asciiCode;
                 end case;
             when KeyOFF => 
             state := KeyOn;
                 case key is 
                     when X"12" => shiftP <= false;
-                    when X"58" => capsOn <= false;
-                    when X"5A" => newLine <= '0';
-                    when X"76" => clear <= '0';
-                    when others => charRdy <= '0';
+                    when others => null;
                 end case;
           end case;
         end if;
@@ -206,16 +208,20 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then
-        if (clear = '1') then
+        if rstSync='1' then
           x <= (others => '0');
-        elsif (newline = '1') then
-          x <= (others => '0');
-        elsif(charRdy = '1') then
-            if (x = COLSxLINE) then 
-                x <= (others => '0');
-            else x <= x + 1;
+        else 
+            if (clear = '1') then
+              x <= (others => '0');
+            elsif (newline = '1') then
+              x <= (others => '0');
+            elsif(charRdy = '1') then
+                if (x = COLSxLINE) then 
+                    x <= (others => '0');
+                else x <= x + 1;
+                end if;
             end if;
-        end if;
+         end if;
     end if;
   end process;
   
@@ -223,20 +229,24 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then
-        if (clear = '1') then
+        if rstSync = '1' then
           y <= (others => '0');
-        elsif (newLine = '1') then
-           if (y = ROWSxFRAME) then
-               y <= (others => '0');
-           else
-               y <= y + 1;
-           end if;
-        elsif(charRdy = '1') then
-            if (x = COLSxLINE) then
-                if (y = ROWSxFRAME) then 
-                    y <= (others => '0');
-                else 
-                    y <= y + 1;
+        else
+            if (clear = '1') then
+              y <= (others => '0');
+            elsif (newLine = '1') then
+               if (y = ROWSxFRAME) then
+                   y <= (others => '0');
+               else
+                   y <= y + 1;
+               end if;
+            elsif(charRdy = '1') then
+                if (x = COLSxLINE) then
+                    if (y = ROWSxFRAME) then 
+                        y <= (others => '0');
+                    else 
+                        y <= y + 1;
+                    end if;
                 end if;
             end if;
         end if;
