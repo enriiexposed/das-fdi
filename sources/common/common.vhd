@@ -250,6 +250,47 @@ component vgaTextInterface is
   );
 end component;
 
+component vgaGraphicInterface is
+  generic(
+    FREQ_DIV : natural  -- valor por el que dividir la frecuencia del reloj del sistema para obtener 25 MHz
+  );
+  port ( 
+    -- host side
+    clk     : in std_logic;   -- reloj del sistema
+    clear   : in std_logic;   -- borra la memoria de refresco
+    dataRdy : in std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo pixel a visualizar
+    color   : in std_logic_vector (2 downto 0);   -- color del pixel a visualizar
+    x       : in std_logic_vector (9 downto 0);   -- columna en donde visualizar el pixel
+    y       : in std_logic_vector (8 downto 0);   -- fila en donde visualizar el pixel
+    --
+    line    : out std_logic_vector(8 downto 0);   -- numero de linea que se esta barriendo
+    pixel   : out std_logic_vector(9 downto 0);   -- numero de pixel que se esta barriendo
+    -- VGA side
+    hSync   : out std_logic;   -- sincronizacion horizontal
+    vSync   : out std_logic;   -- sincronizacion vertical
+    RGB     : out std_logic_vector (11 downto 0)   -- canales de color
+  );
+end component;
+
+component ps2interface is
+  generic(
+    FREQ_KHZ  : natural    -- frecuencia de operacion en KHz
+  );
+  port (
+    -- host side
+    clk        : in  std_logic;   -- reloj del sistema
+    rst        : in  std_logic;   -- reset síncrono del sistema      
+    RxDataRdy  : out std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo dato recibido
+    RxData     : out std_logic_vector (7 downto 0);   -- dato recibido
+    TxDataRdy  : in  std_logic;   -- se activa durante 1 ciclo cada vez que hay un nuevo dato a transmitir   
+    TxData     : in  std_logic_vector (7 downto 0);   -- dato a transmitir
+    busy       : out std_logic;   -- se activa mientras esta transmitiendo
+    -- PS2 side
+    ps2Clk     : inout  std_logic;   -- reloj del interfaz PS2
+    ps2Data    : inout  std_logic    -- datos serie del interfaz PS2
+  );
+end component;
+
 end package common;
 
 -------------------------------------------------------------------

@@ -4,14 +4,14 @@
 --    vgaTextInterface.vhd  12/09/2023
 --
 --    (c) J.M. Mendias
---    Diseño Automático de Sistemas
---    Facultad de Informática. Universidad Complutense de Madrid
+--    Diseï¿½o Automï¿½tico de Sistemas
+--    Facultad de Informï¿½tica. Universidad Complutense de Madrid
 --
---  Propósito:
---    Genera las señales de color y sincronismo de un interfaz texto
---    VGA con resolución de 80x30 caracteres de 8x16 pixeles.
+--  Propï¿½sito:
+--    Genera las seï¿½ales de color y sincronismo de un interfaz texto
+--    VGA con resoluciï¿½n de 80x30 caracteres de 8x16 pixeles.
 --
---  Notas de diseño:
+--  Notas de diseï¿½o:
 --    - Para frecuencias a partir de 50 Mhz en multiplos de 25 MHz
 --    - Incluye una memoria de refresco para almacenar los caracteres
 --      a visualizar y una memoria de mapas de bits de cada caracter 
@@ -83,7 +83,7 @@ architecture syn of vgaTextInterface is
   signal bitMapLine  : std_logic_vector (7 downto 0);
   signal bitMapPixel : std_logic;
 
-  type   romType is array (0 to 2**12-1) of std_logic_vector (7 downto 0);  -- OJO: los pixeles están ubicados de izq. a der. y da igual que se cambie el range
+  type   romType is array (0 to 2**12-1) of std_logic_vector (7 downto 0);  -- OJO: los pixeles estï¿½n ubicados de izq. a der. y da igual que se cambie el range
   signal rom : romType := (
     X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00",    -- null
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
@@ -124,7 +124,7 @@ architecture syn of vgaTextInterface is
     X"00", X"18", X"18", X"7c", X"c6", X"c2", X"c0", X"7c", X"06", X"86", X"c6", X"7c", X"18", X"18", X"00", X"00",    -- $
     X"00", X"00", X"00", X"00", X"00", X"c3", X"c6", X"0c", X"18", X"30", X"63", X"c3", X"00", X"00", X"00", X"00",    -- %
     X"00", X"00", X"00", X"38", X"6c", X"6c", X"38", X"76", X"dc", X"cc", X"cc", X"76", X"00", X"00", X"00", X"00",    -- &
-    X"00", X"00", X"30", X"30", X"30", X"60", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00",    -- ´
+    X"00", X"00", X"30", X"30", X"30", X"60", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00", X"00",    -- ï¿½
     X"00", X"00", X"00", X"18", X"30", X"60", X"60", X"60", X"60", X"60", X"30", X"18", X"00", X"00", X"00", X"00",    -- (
     X"00", X"00", X"00", X"18", X"0c", X"06", X"06", X"06", X"06", X"06", X"0c", X"18", X"00", X"00", X"00", X"00",    -- )
     X"00", X"00", X"00", X"00", X"00", X"6c", X"38", X"fe", X"38", X"6c", X"00", X"00", X"00", X"00", X"00", X"00",    -- *
@@ -249,8 +249,8 @@ architecture syn of vgaTextInterface is
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
-    X"00", X"00", X"76", X"dc", X"00", X"00", X"dc", X"66", X"66", X"66", X"66", X"66", X"00", X"00", X"00", X"00",    -- ñ
-    X"00", X"00", X"76", X"dc", X"00", X"00", X"dc", X"66", X"66", X"66", X"66", X"66", X"00", X"00", X"00", X"00",    -- Ñ
+    X"00", X"00", X"76", X"dc", X"00", X"00", X"dc", X"66", X"66", X"66", X"66", X"66", X"00", X"00", X"00", X"00",    -- ï¿½
+    X"00", X"00", X"76", X"dc", X"00", X"00", X"dc", X"66", X"66", X"66", X"66", X"66", X"00", X"00", X"00", X"00",    -- ï¿½
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
     X"00", X"7e", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"42", X"7e", X"00",    -- empty
@@ -411,7 +411,7 @@ begin
   clearCounters:
   process (clk, clearX, clearY, clear)
   begin
-    if clear = '1' or (clearX > "0000000" or clearY > "00000") then
+    if clear = '1' or (clearX /= "0000000" or clearY /= "00000") then
       clearing <= '1';
     else
       clearing <= '0';
@@ -419,9 +419,9 @@ begin
     
     if rising_edge(clk) then
       if clear='1' or clearing='1' then
-        if (clearX = COLSxLINE) then
-            if (clearY = ROWSxFRAME) then
-                clearX <= (others => '0');
+        if (clearX = PIXELSxLINE) then
+            clearX <= (others => '0');
+            if (clearY = LINESxFRAME) then
                 clearY <= (others => '0');
             else
                 clearY <= clearY + 1;
