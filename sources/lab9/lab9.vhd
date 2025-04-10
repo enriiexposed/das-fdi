@@ -108,7 +108,7 @@ begin
             end if;
           when waitingXoffset =>
               if status(6) = '0' then
-                xOffset := signed(status(4) & RxData);
+                xOffset := resize(signed(status(4) & RxData), log2(PIXELSxLINE));
                 x <= unsigned(std_logic_vector(signed(std_logic_vector(x)) + xOffset));
               end if;
               if RxDataRdy='1' then
@@ -118,7 +118,7 @@ begin
               -- Pintamos en la x e y que tengamos
               colorRdy <= status(0);
               if status(7) = '0' then
-                yOffset := signed(status(5) & RxData);
+                yOffset := resize(signed(status(5) & RxData), log2(LINESxFRAME));
                 y <= unsigned(std_logic_vector(signed(std_logic_vector(y)) + yOffset));
               end if;
               if RxDataRdy='1' then
@@ -165,14 +165,13 @@ begin
   begin
     RGB <= RGBInterface;
     if pixel >= std_logic_vector(x) and pixel < std_logic_vector(x + size) and line >= std_logic_vector(y) and line < std_logic_vector(y + size) then
-      xAddr := to_integer(x(3 downto 0));
-      yAddr := to_integer(y(3 downto 0));
+      xAddr := to_integer(x(log2(SIZE)-1 downto 0));
+      yAddr := to_integer(y(log2(SIZE)-1 downto 0));
       case rom(yAddr * xAddr) is
         when 0 => RGB <= (others => '0');
         when 1 => RGB <= (others => '1');
         when 2 => null;
       end case;
     end if;
-  end process;   
-
+  end process;
 end syn;

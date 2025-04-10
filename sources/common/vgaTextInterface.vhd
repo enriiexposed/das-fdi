@@ -419,9 +419,9 @@ begin
     
     if rising_edge(clk) then
       if clear='1' or clearing='1' then
-        if (clearX = PIXELSxLINE) then
+        if (clearX = COLSxLINE) then
             clearX <= (others => '0');
-            if (clearY = LINESxFRAME) then
+            if (clearY = ROWSxFRAME) then
                 clearY <= (others => '0');
             else
                 clearY <= clearY + 1;

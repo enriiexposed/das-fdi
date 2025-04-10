@@ -86,7 +86,7 @@ begin
   we        <= clearing or dataRdy;
   ramWrData <= color when clearing = '0' else (others => '0');      
   ramWrAddr <= Y & X when clearing = '0' else std_logic_vector(clearY & clearX); 
-  ramRdAddr <= lineRefresher & pixelRefresher;
+  ramRdAddr <= lineRefresher(8 downto 0) & pixelRefresher;
   
   process (clk)
     variable ramOut : std_logic_vector (2 downto 0);
@@ -105,7 +105,7 @@ begin
   clearCounters:
   process (clk, clearX, clearY, clear)
   begin
-    if clear = '1' or (clearX /= "0000000" or clearY /= "00000") then
+    if clear = '1' or clearX /= (9 downto 0 => '0') or clearY /= (8 downto 0 => '0') then
       clearing <= '1';
     else
       clearing <= '0';

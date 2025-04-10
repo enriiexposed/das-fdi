@@ -88,12 +88,15 @@ begin
   
     RxData <= shifter(8 downto 1);
     case state is
-      when idle | receiving =>
+      when idle =>
         ps2Clk  <= 'Z';
         ps2Data <= 'Z';
         busy <= '0';
-      when idle =>
         RxDataRdy <= '0';
+      when receiving =>
+        ps2Clk  <= 'Z';
+        ps2Data <= 'Z';
+        busy <= '0';
       when clkDown => 
         ps2Clk <= '0';
         ps2Data <= '0';
@@ -102,7 +105,7 @@ begin
         ps2Clk <= '0';
         ps2Data <= shifter(0);
         busy <= '1';
-        numCycles := us2cycles(FREQ_KHZ, 500);
+        
       when waitingClkRise | sending =>
         ps2Clk <= 'Z';
         ps2Data <= shifter(0);
@@ -111,14 +114,13 @@ begin
     
     if rising_edge(clk) then
       if rst='1' then
-        state := idle;  
+        state := idle;
+      -- Estados con timing se quedan hasta que acabe el tiempo
       elsif numCycles /= 0 then
         numCycles := numCycles - 1;
       else
         case state is
-            
           when idle =>         
-            RxDataRdy <= '0';
             if txDataRdy='1' then
               state     := clkDown;
               numCycles := us2cycles(FREQ_KHZ, 100);
@@ -132,19 +134,28 @@ begin
           when receiving =>     
             if (ps2ClkFall = '1') then
               shifter   := ps2DataSync & shifter(10 downto 1);
-              if (bitPos < 10) then
+              if (bitPos < 10) then  
                 bitPos    := bitPos + 1;
               else 
                 state   := idle;
                 RxDataRdy <= '1';
               end if;
             end if;
+          when clkDown =>
+            if (numCycles = 0) then
+              state := dataDown;
+              numCycles := us2cycles(FREQ_KHZ, 500);
+            end if;
+          when dataDown =>
+            if (numCycles = 0) then
+              state := waitingClkRise;
+            end if;
           when waitingClkRise =>
             if ps2ClkRise = '1' then
               state     := sending;
             end if;
           when sending =>
-            if (ps2ClkFall = '1') then
+            if (ps2ClkRise = '1') then
               if (bitPos < 10) then
                 shifter   := ps2DataSync & shifter(10 downto 1);
                 bitPos    := bitPos + 1;
